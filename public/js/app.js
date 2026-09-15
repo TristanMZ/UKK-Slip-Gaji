@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // ---- Cari data karyawan otomatis berdasarkan NIK ----
   var nikInput = document.getElementById("nik");
   var namaInput = document.getElementById("nama");
+  var jabatanInput = document.getElementById("jabatan");
   var namaOutput = document.getElementById("preview-nama");
   var jabatanOutput = document.getElementById("preview-jabatan");
   var gajiPokokInput = document.getElementById("gaji_pokok");
@@ -46,6 +47,9 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.ditemukan) {
               if (namaInput && !namaInput.value) {
                 namaInput.value = data.nama;
+              }
+              if (jabatanInput && !jabatanInput.value) {
+                jabatanInput.value = data.jabatan;
               }
               if (namaOutput) namaOutput.textContent = data.nama;
               if (jabatanOutput) jabatanOutput.textContent = data.jabatan;

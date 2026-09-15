@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\SlipGajiMail;
 use App\Models\Karyawan;
 use App\Models\SlipGaji;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class SlipGajiController extends Controller
 {
@@ -52,6 +52,7 @@ class SlipGajiController extends Controller
         $data = $request->validate([
             'nik' => ['required', 'string', 'max:20'],
             'nama' => ['nullable', 'string', 'max:255'],
+            'jabatan' => ['required', 'string', 'max:100'],
             'email' => ['nullable', 'email', 'max:255'],
             'whatsapp' => ['nullable', 'string', 'max:20'],
             'periode_awal' => ['required', 'date'],
@@ -83,7 +84,7 @@ class SlipGajiController extends Controller
             $karyawan = Karyawan::create([
                 'nik' => $data['nik'],
                 'nama' => $data['nama'],
-                'jabatan' => '',
+                'jabatan' => $data['jabatan'],
                 'email' => filled($data['email'] ?? null) ? $data['email'] : null,
                 'whatsapp' => filled($data['whatsapp'] ?? null) ? $data['whatsapp'] : null,
                 'gaji_pokok' => 0,
@@ -91,6 +92,7 @@ class SlipGajiController extends Controller
         } else {
             $karyawan->update([
                 'nama' => $data['nama'] ?? $karyawan->nama,
+                'jabatan' => $data['jabatan'],
                 'email' => filled($data['email'] ?? null) ? $data['email'] : $karyawan->email,
                 'whatsapp' => filled($data['whatsapp'] ?? null) ? $data['whatsapp'] : $karyawan->whatsapp,
             ]);
@@ -196,6 +198,7 @@ class SlipGajiController extends Controller
         $data = $request->validate([
             'nik' => ['required', 'string', 'max:20'],
             'nama' => ['nullable', 'string', 'max:255'],
+            'jabatan' => ['required', 'string', 'max:100'],
             'email' => ['nullable', 'email', 'max:255'],
             'whatsapp' => ['nullable', 'string', 'max:20'],
             'periode_awal' => ['required', 'date'],
@@ -227,7 +230,7 @@ class SlipGajiController extends Controller
             $karyawan = Karyawan::create([
                 'nik' => $data['nik'],
                 'nama' => $data['nama'],
-                'jabatan' => '',
+                'jabatan' => $data['jabatan'],
                 'email' => filled($data['email'] ?? null) ? $data['email'] : null,
                 'whatsapp' => filled($data['whatsapp'] ?? null) ? $data['whatsapp'] : null,
                 'gaji_pokok' => 0,
@@ -235,6 +238,7 @@ class SlipGajiController extends Controller
         } else {
             $karyawan->update([
                 'nama' => $data['nama'] ?? $karyawan->nama,
+                'jabatan' => $data['jabatan'],
                 'email' => filled($data['email'] ?? null) ? $data['email'] : $karyawan->email,
                 'whatsapp' => filled($data['whatsapp'] ?? null) ? $data['whatsapp'] : $karyawan->whatsapp,
             ]);
@@ -285,7 +289,31 @@ class SlipGajiController extends Controller
             ]);
         }
 
-        Mail::to($slipGaji->karyawan->email)->send(new SlipGajiMail($slipGaji));
+        if (blank(config('services.resend.key')) || blank(config('services.resend.from'))) {
+            return back()->withErrors([
+                'email' => 'Konfigurasi email belum lengkap. Isi RESEND_API_KEY dan MAIL_FROM_ADDRESS di file .env.',
+            ]);
+        }
+
+        try {
+            $slipGaji->load('karyawan');
+
+            Http::withToken(config('services.resend.key'))
+                ->acceptJson()
+                ->post('https://api.resend.com/emails', [
+                    'from' => config('services.resend.name') . ' <' . config('services.resend.from') . '>',
+                    'to' => [$slipGaji->karyawan->email],
+                    'subject' => 'Slip Gaji ' . $slipGaji->karyawan->nama . ' - ' . $slipGaji->periode_awal->format('d M Y'),
+                    'html' => view('emails.slip-gaji', compact('slipGaji'))->render(),
+                ])
+                ->throw();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return back()->withErrors([
+                'email' => 'Email gagal dikirim. Periksa API key dan alamat pengirim Resend.',
+            ]);
+        }
 
         return back()->with('sukses', 'Slip gaji berhasil dikirim ke email karyawan.');
     }

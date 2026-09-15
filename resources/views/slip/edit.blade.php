@@ -36,6 +36,13 @@
                     placeholder="Isi nama lengkap jika karyawan baru">
             </div>
 
+            <div class="field @error('jabatan') has-error @enderror">
+                <label for="jabatan">Jabatan</label>
+                <input type="text" id="jabatan" name="jabatan"
+                    value="{{ old('jabatan', $slipGaji->karyawan->jabatan) }}" placeholder="Contoh: Staff Administrasi"
+                    maxlength="100" required>
+            </div>
+
             <div class="field-row">
                 <div class="field @error('email') has-error @enderror">
                     <label for="email">Email</label>

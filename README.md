@@ -132,3 +132,20 @@ sebelum coding. Aplikasi ini adalah hasil dari **Kelompok Pekerjaan 2**
 (implementasi kode). Kalau Anda masih perlu membuat wireframe/mockup untuk
 dikumpulkan terpisah, beri tahu saya — saya bisa bantu buatkan itu juga
 (misalnya sebagai gambar/desain terpisah mengikuti contoh di soal).
+
+## api
+RESEND_API_KEY diisi dengan API key dari akun Resend, bukan email atau password Gmail.
+
+Cara mendapatkannya:
+
+Buka resend.com
+Daftar atau login.
+Masuk ke menu API Keys.
+Klik Create API Key.
+Beri nama, misalnya slip-gaji.
+Pilih akses pengiriman email.
+Salin key yang biasanya diawali re_.
+Isi di file .env:
+
+
+Jangan membagikan API key atau memasukkannya ke GitHub. Untuk tahap awal, onboarding@resend.dev biasanya hanya dapat mengirim ke email akun Resend Anda. Untuk mengirim ke email karyawan lain, verifikasi domain pengirim di Resend, lalu ubah:

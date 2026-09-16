@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Buat Slip Gaji — Slip Gaji Karyawan')
+@section('title', 'Buat Slip Gaji - Slip Gaji Karyawan')
 
 @section('content')
     <div class="section-heading">
@@ -27,6 +27,9 @@
                     data-search-url="{{ route('karyawan.cari') }}" required>
                 <div class="hint">Ketik NIK untuk mengisi otomatis nama. Jika belum ada, isi nama di bawah untuk membuat
                     data karyawan baru.</div>
+                <div id="karyawan-not-found" class="alert alert-error" style="display:none;">
+                    NIK tidak ditemukan dalam data karyawan. Isi nama di bawah lalu simpan untuk membuat data karyawan baru.
+                </div>
             </div>
 
             <div class="field @error('nama') has-error @enderror">
@@ -56,9 +59,6 @@
 
             <div id="karyawan-preview" class="alert alert-success" style="display:none;">
                 <strong id="preview-nama"></strong> &middot; <span id="preview-jabatan"></span>
-            </div>
-            <div id="karyawan-not-found" class="alert alert-error" style="display:none;">
-                NIK tidak ditemukan dalam data karyawan. Isi nama di bawah lalu simpan untuk membuat data karyawan baru.
             </div>
 
             <div class="field-row">

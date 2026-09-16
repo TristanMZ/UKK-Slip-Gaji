@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SlipGajiMail;
 use App\Models\Karyawan;
 use App\Models\SlipGaji;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -289,29 +290,19 @@ class SlipGajiController extends Controller
             ]);
         }
 
-        if (blank(config('services.resend.key')) || blank(config('services.resend.from'))) {
+        if (config('mail.default') !== 'smtp' || blank(config('mail.mailers.smtp.username')) || blank(config('mail.mailers.smtp.password'))) {
             return back()->withErrors([
-                'email' => 'Konfigurasi email belum lengkap. Isi RESEND_API_KEY dan MAIL_FROM_ADDRESS di file .env.',
+                'email' => 'Konfigurasi SMTP belum lengkap. Isi MAIL_USERNAME dan MAIL_PASSWORD di file .env.',
             ]);
         }
 
         try {
-            $slipGaji->load('karyawan');
-
-            Http::withToken(config('services.resend.key'))
-                ->acceptJson()
-                ->post('https://api.resend.com/emails', [
-                    'from' => config('services.resend.name') . ' <' . config('services.resend.from') . '>',
-                    'to' => [$slipGaji->karyawan->email],
-                    'subject' => 'Slip Gaji ' . $slipGaji->karyawan->nama . ' - ' . $slipGaji->periode_awal->format('d M Y'),
-                    'html' => view('emails.slip-gaji', compact('slipGaji'))->render(),
-                ])
-                ->throw();
+            Mail::to($slipGaji->karyawan->email)->send(new SlipGajiMail($slipGaji));
         } catch (Throwable $exception) {
             report($exception);
 
             return back()->withErrors([
-                'email' => 'Email gagal dikirim. Periksa API key dan alamat pengirim Resend.',
+                'email' => 'Email gagal dikirim. Periksa konfigurasi SMTP Gmail dan App Password.',
             ]);
         }
 

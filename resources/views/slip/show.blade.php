@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Slip Gaji — ' . $slipGaji->karyawan->nama)
+@section('title', 'Slip Gaji - ' . $slipGaji->karyawan->nama)
 
 @section('content')
     <div class="section-heading no-print">

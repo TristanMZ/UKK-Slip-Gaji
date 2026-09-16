@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Masuk — Slip Gaji Karyawan')
+@section('title', 'Masuk - Slip Gaji Karyawan')
 
 @section('content')
     <div class="login-shell">

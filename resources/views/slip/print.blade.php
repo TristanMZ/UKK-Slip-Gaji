@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Print Slip Gaji — Slip Gaji Karyawan')
+@section('title', 'Print Slip Gaji - Slip Gaji Karyawan')
 
 @section('content')
     @php
@@ -27,9 +27,9 @@
             @if ($selectedPeriodeAwal || $selectedPeriodeAkhir)
                 <div class="alert alert-info">
                     Menampilkan semua slip yang termasuk dalam rentang periode
-                    {{ $selectedPeriodeAwal ? \Illuminate\Support\Carbon::parse($selectedPeriodeAwal)->format('d M Y') : '—' }}
+                    {{ $selectedPeriodeAwal ? \Illuminate\Support\Carbon::parse($selectedPeriodeAwal)->format('d M Y') : '-' }}
                     sampai
-                    {{ $selectedPeriodeAkhir ? \Illuminate\Support\Carbon::parse($selectedPeriodeAkhir)->format('d M Y') : '—' }}
+                    {{ $selectedPeriodeAkhir ? \Illuminate\Support\Carbon::parse($selectedPeriodeAkhir)->format('d M Y') : '-' }}
                 </div>
             @endif
         </div>

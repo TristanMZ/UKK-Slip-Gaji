@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard — Slip Gaji Karyawan')
+@section('title', 'Dashboard Slip Gaji Karyawan')
 
 @section('content')
     <div class="section-heading">
